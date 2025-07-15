@@ -1,0 +1,10 @@
+# .gitignore
+__pycache__/
+*.pyc
+data/
+.dvc/
+mlruns/
+models/
+*.log
+.env
+*.csv
