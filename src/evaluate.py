@@ -1,23 +1,39 @@
 import pandas as pd
 import pickle
-import yaml
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+import numpy as np
 
-params = yaml.safe_load(open("params.yaml"))
-
-df = pd.read_csv("data/raw_data.csv")
-df["Date"] = pd.to_datetime(df["Date"])
-df["Date_ordinal"] = df["Date"].map(pd.Timestamp.toordinal)
-
-X = df[["Date_ordinal"]]
-y = df["Close"]
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=params["train"]["test_size"], random_state=params["train"]["random_state"])
-
+# Load model
 with open("models/model.pkl", "rb") as f:
     model = pickle.load(f)
 
-preds = model.predict(X_test)
-mse = mean_squared_error(y_test, preds)
-print("MSE:", mse)
+# Load test data
+df = pd.read_csv("data/raw_data.csv")
+
+# Ensure Date column is datetime and handle NaT
+df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+df.dropna(subset=["Date"], inplace=True)
+df["DateOrdinal"] = df["Date"].apply(lambda x: x.toordinal())
+
+# Make predictions
+X_test = df[["DateOrdinal"]]
+y_test = df["Close"]
+y_pred = model.predict(X_test)
+
+# Evaluate
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+r2 = r2_score(y_test, y_pred)
+
+print(f"✅ Evaluation Complete:\n   RMSE: {rmse:.2f}\n   R² Score: {r2:.4f}")
+import json
+
+metrics = {
+    "rmse": round(mean_squared_error(y_test, y_pred) ** 0.5, 2),
+    "r2": round(r2_score(y_test, y_pred), 4)
+}
+
+
+with open("metrics.json", "w") as f:
+    json.dump(metrics, f, indent=4)
+
+print("✅ Evaluation metrics saved to metrics.json")
