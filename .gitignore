@@ -1,10 +1,55 @@
-# .gitignore
+# Python
 __pycache__/
-*.pyc
-data/
-.dvc/
-mlruns/
-models/
+*.py[cod]
+*.pyo
 *.log
+
+# Environment & dependencies
 .env
+.env/
+venv/
+.venv/
+
+# Data & Models
+data/
 *.csv
+models/
+*.pkl
+*.joblib
+*.h5
+*.pt
+outputs/
+checkpoints/
+
+# DVC
+.dvc/
+.dvc/cache/
+*.dvc
+
+# MLflow
+mlruns/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+*.tar
+docker-compose.override.yml
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.test.log
+
+# Trivy
+trivy_report.*
+*.sarif
+
+# Others
+.DS_Store
+Thumbs.db
