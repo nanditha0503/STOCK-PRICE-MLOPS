@@ -1,0 +1,40 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Set up DVC and install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1-mesa-glx  # sometimes needed for OpenCV etc.
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install dvc
+
+    - name: DVC Pull (if using remote storage)
+      run: |
+        dvc pull || echo "No remote or data to pull"
+
+    - name: Reproduce DVC pipeline
+      run: |
+        dvc repro
+
+    - name: Build Docker image
+      run: |
+        docker build -t stock-predictor-api .
