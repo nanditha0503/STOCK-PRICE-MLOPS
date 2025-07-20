@@ -52,7 +52,7 @@ with mlflow.start_run():
     # Save model with unique name
     run_id = mlflow.active_run().info.run_id
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_path = f"models/model_{timestamp}.pkl"
+    model_path = f"models/model.pkl"
     os.makedirs("models", exist_ok=True)
     with open(model_path, "wb") as f:
         pickle.dump(model, f)
